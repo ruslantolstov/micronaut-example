@@ -1,0 +1,7 @@
+#Fri Feb 09 11:19:25 UTC 2024
+micronaut:
+  application:
+    name: "support-eng-notifier"
+endpoints:
+  health:
+    enabled: true
