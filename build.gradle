@@ -12,6 +12,8 @@ repositories {
 }
 
 dependencies {
+    annotationProcessor("io.micronaut.validation:micronaut-validation-processor") // required for validations
+    implementation("io.micronaut.validation:micronaut-validation") // required for validations
     annotationProcessor("io.micronaut:micronaut-http-validation")
     annotationProcessor("io.micronaut.serde:micronaut-serde-processor")
     implementation("io.micronaut.serde:micronaut-serde-jackson")
@@ -20,6 +22,15 @@ dependencies {
     implementation("io.micronaut:micronaut-management")
     runtimeOnly("org.yaml:snakeyaml") // required for configuration
     testImplementation("io.micronaut:micronaut-http-client")
+
+    annotationProcessor("org.immutables:value:2.9.2")  // immutables
+    implementation("org.immutables:value:2.9.2") // immutables
+    compileOnly("com.fasterxml.jackson.core:jackson-databind") // jackson
+
+
+    compileOnly("org.projectlombok:lombok:1.18.30") // lombok
+    annotationProcessor("org.projectlombok:lombok:1.18.30") // lombok
+    annotationProcessor("io.micronaut:micronaut-inject-java") // required for lombok
 }
 
 
