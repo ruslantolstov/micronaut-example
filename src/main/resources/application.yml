@@ -2,6 +2,42 @@
 micronaut:
   application:
     name: "support-eng-notifier"
+  http:
+    services:
+      backoffice:
+        urls: ${BACKOFFICE_URL}
+        auth-token: ${BACKOFFICE_AUTH_TOKEN}
+        connection-pool-idle-timeout: 5m
+        connect-timeout: 500ms
+        log-level: DEBUG
+        pool:
+          enabled: true
+          max-connections: 10
+        read-timeout: 3s
+      order-ledger:
+        urls: ${ORDER_LEDGER_URL}
+        connection-pool-idle-timeout: 5m
+        connect-timeout: 500ms
+        log-level: DEBUG
+        pool:
+          enabled: true
+          max-connections: 10
+        read-timeout: 3s
+  security:
+    enabled: true # by default
+    oauth2:
+      clients:
+        order-ledger-auth0:
+          client-id: ${OAUTH2_CLIENT_ID}
+          client-secret: ${OAUTH2_CLIENT_SECRET}
+          grant-type: client_credentials
+          token:
+            url: ${AUTH0_ISSUER}/oauth/token
+            auth-method: client_secret_post
+          client-credentials:
+            service-id-regex: order-ledger
+            additional-request-params:
+              audience: ${AUTH0_ORDER_LEDGER_AUDIENCE}
 endpoints:
   health:
     enabled: true
