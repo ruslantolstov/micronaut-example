@@ -25,6 +25,8 @@ dependencies {
     runtimeOnly("org.yaml:snakeyaml") // required for configuration
     testImplementation("io.micronaut:micronaut-http-client")
 
+    implementation("io.micronaut.reactor:micronaut-reactor-http-client")
+
     annotationProcessor("org.immutables:value:2.9.2")  // immutables
     implementation("org.immutables:value:2.9.2") // immutables
     compileOnly("com.fasterxml.jackson.core:jackson-databind") // jackson
