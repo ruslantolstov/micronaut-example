@@ -6,6 +6,8 @@ import com.support.eng.notifier.client.orderledger.model.Order;
 import com.support.eng.notifier.dto.request.record.UserRequest;
 import com.support.eng.notifier.dto.response.UserV2Response;
 import com.support.eng.notifier.model.User;
+import com.support.eng.notifier.service.UserService;
+import io.micronaut.context.ApplicationContext;
 import io.micronaut.http.annotation.*;
 import io.micronaut.scheduling.TaskExecutors;
 import io.micronaut.scheduling.annotation.ExecuteOn;
@@ -26,11 +28,20 @@ public class UserController {
     @Inject
     OrderLedgerClient orderLedgerClient;
 
+    @Inject
+    UserService userService;
+
+    @Inject
+    ApplicationContext applicationContext;
+
     @Get("/")
     @Produces("application/json")
     public List<User> index() {
-        List<User> users = List.of(User.builder().id(2166339).name("Fred").build(), User.builder().id(2).build());
-        return users;
+        System.out.println(">>>>>>>>OBJECT ID" + userService.hashCode());
+        return userService.allUsers();
+        //var userS = applicationContext.getBean(UserService.class);
+        //System.out.println(">>>>>>>>OBJECT ID" + userS.hashCode());
+        //return userS.allUsers();
     }
 
     @Get("/{id}")
