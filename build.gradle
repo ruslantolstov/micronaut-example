@@ -25,6 +25,13 @@ dependencies {
     runtimeOnly("org.yaml:snakeyaml") // required for configuration
     testImplementation("io.micronaut:micronaut-http-client")
 
+
+    //Database
+    implementation("io.micronaut.flyway:micronaut-flyway") // flyway migrations
+    implementation("org.flywaydb:flyway-database-postgresql:10.0.1") // used for flyway
+    runtimeOnly("io.micronaut.sql:micronaut-jdbc-hikari") // used for flyway
+    runtimeOnly("org.postgresql:postgresql")
+
     implementation("io.micronaut.reactor:micronaut-reactor-http-client")
 
     annotationProcessor("org.immutables:value:2.9.2")  // immutables
@@ -76,6 +83,18 @@ micronaut {
 /**
  * Custom Tasks
  */
+
+tasks.register("kill", Exec) {
+    group("Local Development")
+    description("Kill ${appName} running locally")
+    commandLine("local-setup/killserver.sh")
+}
+
+tasks.register("startdb", Exec) {
+    group("Local Development")
+    description("Starts postgres and redis containers locally in docker. See docker-compose.yml for vars required in your .env file")
+    commandLine("./local-setup/startupdev.sh")
+}
 run.configure {
     group("Local Development")
     description("Run ${appName} in local run-mode, sourcing environment variables from .env file.")

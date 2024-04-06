@@ -41,3 +41,15 @@ micronaut:
 endpoints:
   health:
     enabled: true
+datasources:
+  migration:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/support-eng-notifier
+    driverClassName: org.postgresql.Driver
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:password}
+    ssl: ${POSTGRES_SSL:false}
+flyway:
+  datasources:
+    migration:
+      enabled: true
+      locations: classpath:migrations
