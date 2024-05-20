@@ -53,3 +53,22 @@ flyway:
     migration:
       enabled: true
       locations: classpath:migrations
+r2dbc:
+  datasources:
+    default:
+      options:
+        driver: pool
+        protocol: postgresql
+        initialSize: 3
+        maxSize: 10
+        maxIdleTime: PT5m
+        backgroundEvictionInterval: PT5m
+        minIdle: 0
+        maxAcquireTime: PT10S
+        maxCreateConnectionTime: PT10S
+        maxValidationTime: PT10S
+        maxLifeTime: PT30m
+      url: r2dbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/support-eng-notifier
+      username: ${POSTGRES_USER:postgres}
+      password: ${POSTGRES_PASSWORD:password}
+      ssl: ${POSTGRES_SSL:false}

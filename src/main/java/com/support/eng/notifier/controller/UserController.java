@@ -1,9 +1,12 @@
 package com.support.eng.notifier.controller;
+
 import com.support.eng.notifier.client.backoffice.BackofficeClient;
 import com.support.eng.notifier.client.backoffice.model.BackofficeUser;
 import com.support.eng.notifier.client.orderledger.OrderLedgerClient;
 import com.support.eng.notifier.client.orderledger.model.Order;
+import com.support.eng.notifier.data.repository.UserRepository;
 import com.support.eng.notifier.dto.request.record.UserRequest;
+import com.support.eng.notifier.dto.response.PostResponse;
 import com.support.eng.notifier.dto.response.UserV2Response;
 import com.support.eng.notifier.model.User;
 import com.support.eng.notifier.service.UserService;
@@ -18,58 +21,70 @@ import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import reactor.core.publisher.Mono;
 
 @Controller("/api/users")
 @Secured(SecurityRule.IS_ANONYMOUS)
 public class UserController {
-    @Inject
-    BackofficeClient backofficeClient;
 
-    @Inject
-    OrderLedgerClient orderLedgerClient;
+  @Inject
+  BackofficeClient backofficeClient;
 
-    @Inject
-    UserService userService;
+  @Inject
+  OrderLedgerClient orderLedgerClient;
 
-    @Inject
-    ApplicationContext applicationContext;
+  @Inject
+  UserService userService;
 
-    @Get("/")
-    @Produces("application/json")
-    public List<User> index() {
-        System.out.println(">>>>>>>>OBJECT ID" + userService.hashCode());
-        return userService.allUsers();
-        //var userS = applicationContext.getBean(UserService.class);
-        //System.out.println(">>>>>>>>OBJECT ID" + userS.hashCode());
-        //return userS.allUsers();
-    }
+  @Inject
+  ApplicationContext applicationContext;
 
-    @Get("/{id}")
-    @Produces("application/json")
-    @ExecuteOn(TaskExecutors.BLOCKING)
-    public User show(Integer id) {
-        BackofficeUser bUser = backofficeClient.getUser(2166339);
-        Order order = orderLedgerClient.getOrder(UUID.fromString("544a3351-e2c1-4996-9803-365272d4f729"));
-        User user = User.builder().id(2166339).name("Fred")
-                .email(bUser.getEmail())
-                .roles(bUser.getRoles())
-                .locationId(order.getLocationId())
-                .build();
+  @Inject
+  UserRepository userRepository;
 
-        return user;
-    }
+  @Get("/")
+  @Produces("application/json")
+  public Mono<List<UserV2Response>> index() {
+    return userRepository.findAll().map(user ->
+                                            UserV2Response.builder()
+                                                          .id(user.id())
+                                                          .name(user.name())
+                                                          .email(user.email())
+                                                          .posts(user.posts().stream().map(post -> {
+                                                            return PostResponse.builder()
+                                                                               .id(post.id())
+                                                                               .title(post.title())
+                                                                               .build();
+                                                          }).collect(Collectors.toList()))
+                                                          .age(user.age())
+                                                          .build()).collectList();
+  }
 
-    @Post("/")
-    @Produces("application/json")
-    public UserV2Response create(@Valid @Body UserRequest userRequest) {
-        var user = User.builder().id(1).name(userRequest.name()).age(userRequest.age()).build();
+  @Get("/{id}")
+  @Produces("application/json")
+  public Mono<UserV2Response> show(UUID id, @QueryValue("age") Integer age) {
 
-        var response = UserV2Response.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .age(user.getAge())
-                .build();
+    return userRepository.findByAgeOrId(age, id).map(user ->
+                                                         UserV2Response.builder()
+                                                                       .id(user.id())
+                                                                       .name(user.name())
+                                                                       .email(user.email())
+                                                                       .age(user.age())
+                                                                       .build());
+  }
 
-        return response;
-    }
+  @Post("/")
+  @Produces("application/json")
+  public UserV2Response create(@Valid @Body UserRequest userRequest) {
+    var user = User.builder().id(1).name(userRequest.name()).age(userRequest.age()).build();
+
+    var response = UserV2Response.builder()
+                                 .id(UUID.randomUUID())
+                                 .name(user.getName())
+                                 .age(user.getAge())
+                                 .build();
+
+    return response;
+  }
 }

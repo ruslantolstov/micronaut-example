@@ -3,3 +3,4 @@ logger:
     root: INFO
     io.micronaut.http.client: ALL
     io.micronaut.http.server: ALL
+    io.micronaut.data: ALL
